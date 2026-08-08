@@ -24,6 +24,10 @@ public class AttendanceEntity {
 
     private String timeOut;
 
+    private String timeInImage;
+
+    private String timeOutImage;
+
     private int totalHours;
 
     @Column(precision = 10, scale = 7)
