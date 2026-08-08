@@ -27,9 +27,7 @@ public class FaceService {
     @Transactional
     public void registerFace(FaceRegistrationRequest request, MultipartFile image) {
         try {
-            // 1. Retrieve the user
-            UserEntity user = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found with ID: " + request.getUserId()));
+            UserEntity user = userRepository.findById(request.getUserId()).orElseThrow(() -> new RuntimeException("User not found with ID: " + request.getUserId()));
 
             String imageUrl = fileStorageService.uploadFile(image, "biometrics");
 
@@ -37,18 +35,12 @@ public class FaceService {
                     .map(String::valueOf)
                     .collect(Collectors.joining(","));
 
-            // 3. Fetch or Create the Face Record using the Repository
-            // Since UserEntity has no reference, we query by User ID
             UserFaceRecordEntity faceRecord = faceRecordRepository.findByUserId(user.getId())
                     .orElse(UserFaceRecordEntity.builder().user(user).build());
-
-            // 4. Update fields
             faceRecord.setEmbedding(embeddingString);
             faceRecord.setBiometricImagePath(imageUrl);
             user.setProfilePictureUrl(imageUrl);
 
-// Uncomment to support image saving
-            // 5. Save both
             faceRecordRepository.save(faceRecord);
             userRepository.save(user);
 
