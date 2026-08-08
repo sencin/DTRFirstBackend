@@ -1,6 +1,7 @@
 package com.tensura.dtrsystem.controller;
 
 import com.tensura.dtrsystem.dto.AttendanceRequest;
+import com.tensura.dtrsystem.dto.MonthlyAttendanceResponse;
 import com.tensura.dtrsystem.entity.AttendanceEntity;
 import com.tensura.dtrsystem.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +58,11 @@ public class AttendanceController {
     @GetMapping("/punch-type")
     public ResponseEntity<Map<String, String>> getPunchType() {
         return ResponseEntity.ok(attendanceService.determinePunchType());
+    }
+
+    @GetMapping("/user/{userId}/monthly")
+    public ResponseEntity<MonthlyAttendanceResponse> getMonthlyAttendance(@PathVariable Long userId, @RequestParam int year, @RequestParam int month) {
+        MonthlyAttendanceResponse summary = attendanceService.getMonthlyAttendanceForUser(userId, year, month);
+        return ResponseEntity.ok(summary);
     }
 }
