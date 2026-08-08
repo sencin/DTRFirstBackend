@@ -7,8 +7,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/attendances")
@@ -18,8 +22,8 @@ public class AttendanceController {
     private final AttendanceService attendanceService;
 
     @PostMapping
-    public ResponseEntity<AttendanceEntity> createAttendance(@RequestBody AttendanceRequest dto) {
-        return new ResponseEntity<>(attendanceService.createAttendance(dto), HttpStatus.CREATED);
+    public ResponseEntity<AttendanceEntity> createAttendance(@RequestParam BigDecimal latitude, @RequestParam BigDecimal longitude, @RequestParam MultipartFile picture) throws IOException {
+        return new ResponseEntity<>(attendanceService.createAttendance(latitude,longitude,picture), HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -48,5 +52,10 @@ public class AttendanceController {
     public ResponseEntity<Void> deleteAttendance(@PathVariable Long id) {
         attendanceService.deleteAttendance(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/punch-type")
+    public ResponseEntity<Map<String, String>> getPunchType() {
+        return ResponseEntity.ok(attendanceService.determinePunchType());
     }
 }
