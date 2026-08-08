@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @Transactional
-    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/register-face", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> registerFace(@RequestPart("request") FaceRegistrationRequest request, @RequestPart("image") MultipartFile image) {
         faceService.registerFace(request, image);
         return ResponseEntity.ok("Face registered successfully");
