@@ -22,6 +22,7 @@ public class UserEntity {
     private String email;
     private String password;
     private String role;
+    private String status;
     @Column(name = "profile_picture_url")
     private String profilePictureUrl;
 }
