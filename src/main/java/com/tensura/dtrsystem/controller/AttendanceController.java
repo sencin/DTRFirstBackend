@@ -7,6 +7,7 @@ import com.tensura.dtrsystem.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,11 +28,13 @@ public class AttendanceController {
         return new ResponseEntity<>(attendanceService.createAttendance(latitude,longitude,picture), HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<AttendanceEntity>> getAllAttendances() {
         return ResponseEntity.ok(attendanceService.getAllAttendances());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<AttendanceEntity> getAttendanceById(@PathVariable Long id) {
         return ResponseEntity.ok(attendanceService.getAttendanceById(id));
@@ -42,13 +45,14 @@ public class AttendanceController {
         return ResponseEntity.ok(attendanceService.getAttendancesByUserId(userId));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<AttendanceEntity> updateAttendance(
             @PathVariable Long id,
             @RequestBody AttendanceRequest dto) {
         return ResponseEntity.ok(attendanceService.updateAttendance(id, dto));
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAttendance(@PathVariable Long id) {
         attendanceService.deleteAttendance(id);
@@ -60,6 +64,7 @@ public class AttendanceController {
         return ResponseEntity.ok(attendanceService.determinePunchType());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/{userId}/monthly")
     public ResponseEntity<MonthlyAttendanceResponse> getMonthlyAttendance(@PathVariable Long userId, @RequestParam int year, @RequestParam int month) {
         MonthlyAttendanceResponse summary = attendanceService.getMonthlyAttendanceForUser(userId, year, month);
