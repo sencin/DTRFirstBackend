@@ -6,6 +6,9 @@ import com.tensura.dtrsystem.entity.UserEntity;
 import com.tensura.dtrsystem.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,10 +24,8 @@ public class UserService {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Email address is already in use: " + dto.getEmail());
         }
-
         UserEntity user = new UserEntity();
         mapDtoToEntity(dto, user);
-        // Note: Password should ideally be encoded using BCrypt before saving
         user.setPassword(dto.getPassword());
 
         return UserResponse.fromEntity(userRepository.save(user));
@@ -37,16 +38,15 @@ public class UserService {
     }
 
     public UserResponse getUserById(Long id) {
+        enforceAdminOrSelf(id);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
         return UserResponse.fromEntity(user);
     }
 
     public UserResponse updateUser(Long id, UserRequest dto) {
-        UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-
-        // Prevent email collisions if updating to a new email address
+        enforceAdminOrSelf(id);
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
         if (!user.getEmail().equals(dto.getEmail()) && userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Email address is already in use: " + dto.getEmail());
         }
@@ -60,10 +60,28 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
+        enforceAdminOrSelf(id);
         if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
+    }
+
+
+    private UserEntity getCurrentAuthenticatedUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    private void enforceAdminOrSelf(Long requestedId) {
+        UserEntity loggedUser = getCurrentAuthenticatedUser();
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(loggedUser.getRole());
+        boolean isSelf = loggedUser.getId().equals(requestedId);
+
+        if (!isAdmin && !isSelf) {
+            throw new AccessDeniedException("Access Denied: You do not have permission to access this user's information.");
+        }
     }
 
     private void mapDtoToEntity(UserRequest dto, UserEntity entity) {
