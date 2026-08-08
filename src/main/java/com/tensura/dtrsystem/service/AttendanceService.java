@@ -1,6 +1,7 @@
 package com.tensura.dtrsystem.service;
 
 import com.tensura.dtrsystem.dto.AttendanceRequest;
+import com.tensura.dtrsystem.dto.MonthlyAttendanceResponse;
 import com.tensura.dtrsystem.entity.AttendanceEntity;
 import com.tensura.dtrsystem.entity.UserEntity;
 import com.tensura.dtrsystem.repository.AttendanceRepository;
@@ -140,6 +141,19 @@ public class AttendanceService {
 
         response.put("punchType", "Time IN");
         return response;
+    }
+
+    public MonthlyAttendanceResponse getMonthlyAttendanceForUser(Long userId, int year, int month) {
+        ZoneId localZone = ZoneId.of("Asia/Manila");
+        LocalDate startLocalDate = LocalDate.of(year, month, 1);
+        Date startDate = Date.from(startLocalDate.atStartOfDay(localZone).toInstant());
+        LocalDate endLocalDate = startLocalDate.withDayOfMonth(startLocalDate.lengthOfMonth());
+        Date endDate = Date.from(endLocalDate.atTime(23, 59, 59, 999).atZone(localZone).toInstant());
+        List<AttendanceEntity> monthlyLogs = attendanceRepository.findMonthlyAttendance(userId, startDate, endDate);
+        int totalHoursInMonth = monthlyLogs.stream()
+                .mapToInt(AttendanceEntity::getTotalHours)
+                .sum();
+        return new MonthlyAttendanceResponse(monthlyLogs, totalHoursInMonth);
     }
 
 
