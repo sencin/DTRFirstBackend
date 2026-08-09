@@ -28,7 +28,7 @@ public class AttendanceEntity {
 
     private String timeOutImage;
 
-    private int totalHours;
+    private Double totalHours;
 
     @Column(precision = 10, scale = 7)
     private BigDecimal latitude;
