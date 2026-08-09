@@ -11,6 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MonthlyAttendanceResponse {
-    private List<AttendanceEntity> records;
-    private int totalHoursRenderedInMonth;
+    private List<AttendanceResponse> records;
+    private double totalHoursRenderedInMonth;
 }
