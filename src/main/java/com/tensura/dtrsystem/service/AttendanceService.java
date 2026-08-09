@@ -167,7 +167,6 @@ public class AttendanceService {
                 response.put("punchType", "Time OUT");
                 return response;
             }
-            throw new RuntimeException("You have already completed your Attendance for today.");
         }
 
         response.put("punchType", "Time IN");
