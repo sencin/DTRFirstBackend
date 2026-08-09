@@ -15,6 +15,7 @@ import java.util.Optional;
 public interface AttendanceRepository extends JpaRepository<AttendanceEntity, Long> {
     List<AttendanceEntity> findByUserId(Long userId);
 
+    List<AttendanceEntity> findByUserIdOrderByIdDesc(Long userId);
     Optional<AttendanceEntity> findTopByUserIdOrderByDateTimeDesc(Long id);
 
     Optional<AttendanceEntity> findByUserAndDate(UserEntity user, Date todayDate);
