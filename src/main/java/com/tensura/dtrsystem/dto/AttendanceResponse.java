@@ -14,7 +14,7 @@ public class AttendanceResponse {
     private String timeOut;
     private String timeInImage;
     private String timeOutImage;
-    private double totalHours;
+    private Double totalHours;
     private BigDecimal latitude;
     private BigDecimal longitude;
     private UserResponse user;
