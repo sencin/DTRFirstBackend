@@ -1,6 +1,7 @@
 package com.tensura.dtrsystem.controller;
 
 import com.tensura.dtrsystem.dto.AttendanceRequest;
+import com.tensura.dtrsystem.dto.AttendanceResponse;
 import com.tensura.dtrsystem.dto.MonthlyAttendanceResponse;
 import com.tensura.dtrsystem.entity.AttendanceEntity;
 import com.tensura.dtrsystem.service.AttendanceService;
@@ -43,6 +44,11 @@ public class AttendanceController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<AttendanceEntity>> getAttendancesByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(attendanceService.getAttendancesByUserId(userId));
+    }
+
+    @GetMapping("/user/{userId}/recent")
+    public ResponseEntity<List<AttendanceResponse>> getRecentAttendancesByUserId(@PathVariable Long userId) {
+        return ResponseEntity.ok(attendanceService.getRecentAttendancesByUserId(userId));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
