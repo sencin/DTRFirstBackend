@@ -3,6 +3,8 @@ package com.tensura.dtrsystem.entity;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -20,7 +22,9 @@ public class UserEntity {
     private String middleName;
     @Column(unique = true)
     private String email;
+    @JsonIgnore
     private String password;
+
     private String role;
     private String status;
     @Column(name = "profile_picture_url")
